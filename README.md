@@ -1,52 +1,88 @@
-# definitions
-raw data: radar signals captured by our device.
-middle fusion: some features are visible.
-raw data is already processed, in human perspective we can already see what it is.
+# Project Overview
 
-# Folder Structure
- /data : contains two subdirectories, one for each experiment(middle and late fusion)
-    late fusion: has two- rear and side view
-    middle fusion: has three- rear view, side view and combined(which is a super position of rear and side views)
-    the rear view folder in
-    - content is similiar.  how Jinyue sliced them is different. 
-    middle fusion: [Need to find]
-    late fusion: [Need to find]
-late_fusion_data_generator_rear_side_matched.py: generates npy file, takes csv files
-late_fusion.py: runs the late fusione experiment. command below
-middle_fusion.py: Jinyue will add the middle fusion model he is using for late fusion.
-middle_fusion_JV_best.py: JV's slight improvement on JS's implementation, but not used for late fusion.
-run_experiments.sh: shell script for running middle fusion
+## Definitions
+- **Raw Data**: Radar signals captured by our device.
+- **Middle Fusion**: Some features are visible. The raw data is already processed, and from a human perspective, we can already see what it is.
 
-results/ : directory to log results, model runs.
-archive/ : archived files for future reference, just in case.
-# Current Experiments
+---
 
-# Planned Experiments
+## Folder Structure
+```
+/data
+├── middle_fusion/  # Contains three subdirectories
+│   ├── rear_view/
+│   ├── side_view/
+│   ├── combined/  # A superposition of rear and side views
+│
+├── late_fusion/  # Contains two subdirectories
+│   ├── rear_view/
+│   ├── side_view/
+│
+/results/  # Directory to log results and model runs
+/archive/  # Archived files for future reference
+```
 
-# Completed Experiments
-- model.py on all 3(rear, side and combined)
-  - rear: performed best
-  - side: worst performing
-  - combined: second
-  - combined: looking at both rear and side data.
-- model_with_fusion.py
--   you train model.py on rear dataset
--   you train model.py on side dataset
--   let both model' predict on the test dataset
--   and then combine their predictions in the fusion layer. (post  evaluation stage)
--   combining does not meet pooling, but creating a more holistic partial 3D view from two partial 3D views.
+### Notes:
+- The **rear view folder** in both fusions has similar content, but the way **Jinyue** sliced them differs.
+- The following need to be identified:
+  - Middle Fusion: **[Need to find]**
+  - Late Fusion: **[Need to find]**
 
-# Commands
-# late_fusion.py
+---
+
+## Scripts
+- **`late_fusion_data_generator_rear_side_matched.py`**: Generates `.npy` files, taking `.csv` files as input.
+- **`late_fusion.py`**: Runs the late fusion experiment.
+- **`middle_fusion.py`**: Jinyue will integrate the middle fusion model used for late fusion.
+- **`middle_fusion_JV_best.py`**: JV’s slight improvement on JS’s implementation, but not used for late fusion.
+- **`run_experiments.sh`**: Shell script for running middle fusion experiments.
+- **`run_experiments_late.sh`**: (To be created) Shell script for running late fusion experiments.
+
+---
+
+## Experiments
+
+### Current Experiments
+- **Ongoing development and model testing.**
+
+### Planned Experiments
+- **Jinyue AR**:
+  - Slice the **rear** and **side** views for late fusion to have **train, val, test** datasets.
+  - Ensure parameters match those of **middle fusion**.
+  - Command to run `late_fusion_data_generator_rear_side_matched.py`.
+  - File to generate `.npy` files for middle fusion.
+  - Clean commands for late fusion and add them to `run_experiments_late.sh`.
+
+### Completed Experiments
+- **`model.py` on all three views (rear, side, combined)**
+  - **Rear View**: Best performing.
+  - **Side View**: Worst performing.
+  - **Combined View**: Second best.
+- **`model_with_fusion.py`**
+  - Train `model.py` on **rear** dataset.
+  - Train `model.py` on **side** dataset.
+  - Let both models predict on the test dataset.
+  - Combine their predictions in the **fusion layer** (post-evaluation stage).
+  - **Note**: Combining does not mean pooling but creating a more holistic partial **3D view** from two partial 3D views.
+
+---
+
+## Commands
+### Late Fusion
+```
+# To run late_fusion.py
 [Jinyue]
+```
 
-# Jayneel AR
-- look and visualize the radar data from the npy files
+---
 
-# Jinyue AR
-- slice the rear, side view for late fusion to have train, val, test(keep the same paramers as middle fusion)
-- command to run late_fusion_data_generator_rear_side_matched.py
-- file to generate npy files for middle fusion.
-- clean commands for late fusion, add it as a .sh file and name it: run_experiments_late.sh
-# to ask Hansol
-- how the combined view dataset was made?
+## Action Items
+
+### Jayneel AR
+- Look and visualize the radar data from the `.npy` files.
+- Confirm with **Hansol** that the data is logically correct.
+- Check if **Hansol** has any additional code used for processing.
+- Obtain **Jinyue's** notes for ground truth.
+
+### Questions for Hansol
+- How was the **combined view dataset** created?

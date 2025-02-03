@@ -1,0 +1,23 @@
+📊 Epoch 1: Train Loss: 2.1991, Val Loss: 0.5333
+  IoU @ {thresh:.1f}: {score:.4f}
+  IoU @ {thresh:.1f}: {score:.4f}
+  IoU @ {thresh:.1f}: {score:.4f}
+  IoU @ {thresh:.1f}: {score:.4f}
+  IoU @ {thresh:.1f}: {score:.4f}
+  IoU @ {thresh:.1f}: {score:.4f}
+  IoU @ {thresh:.1f}: {score:.4f}
+  IoU @ {thresh:.1f}: {score:.4f}
+  IoU @ {thresh:.1f}: {score:.4f}
+✅ Best Model Saved (Val Loss: 0.5333)
+🎉 Training Completed Successfully!
+🚀 Running Final Evaluation on Test Data
+✅ Final Test Loss: 0.5333
+  🏆 IoU @ 0.1: 0.1308
+  🏆 IoU @ 0.2: 0.0731
+  🏆 IoU @ 0.3: 0.0494
+  🏆 IoU @ 0.4: 0.0302
+  🏆 IoU @ 0.5: 0.0220
+  🏆 IoU @ 0.6: 0.0092
+  🏆 IoU @ 0.7: 0.0037
+  🏆 IoU @ 0.8: 0.0000
+  🏆 IoU @ 0.9: 0.0000

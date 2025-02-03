@@ -3,7 +3,14 @@ raw data: radar signals captured by our device.
 middle fusion: some features are visible.
 raw data is already processed, in human perspective we can already see what it is.
 
-
+# Folder Structure
+ /data : contains two subdirectories, one for each experiment(middle and late fusion)
+ late fusion: has two- rear and side view
+ middle fusion: has three- rear view, side view and combined(which is a super position of rear and side views)
+ the rear view folder in
+ - content is similiar.  how Jinyue sliced them is different. 
+ middle fusion:
+ late fusion:
 # Current Experiments
 
 # Planned Experiments
@@ -47,3 +54,9 @@ python late_fusion.py \
 
 # Jayneel AR
 - look and visualize the radar data from the npy files
+
+# Jinyue AR
+- slice the rear, side view for late fusion to have train, val, test(keep the same paramers as middle fusion)
+
+# to ask Hansol
+- how the combined view dataset was made?

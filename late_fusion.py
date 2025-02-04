@@ -672,7 +672,7 @@ def main():
             loss_weights=(3.0,1.0,1.0),  # (w_bbox, w_depth, w_iou)
             log_file=log_f,
             device=device,
-            save_path="best_fusion.pth"
+            save_path="best_late_fusion.pth"
         )
 
     print("Training + Validation complete. No test set in this script.")

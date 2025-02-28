@@ -69,9 +69,8 @@
 ## Scripts
 - **`late_fusion_data_generator_rear_side_matched.py`**: Generates `.npy` files, taking `.csv` files as input.
 - **`late_fusion.py`**: Runs the late fusion experiment.
-- **`middle_fusion.py`**: Jinyue will integrate the middle fusion model used for late fusion.
-- **`middle_fusion_JV_best.py`**: JV’s slight improvement on JS’s implementation, but not used for late fusion.
-- **`run_experiments.sh`**: Shell script for running middle fusion experiments.
+- **`middle_fusion_model.py`**: Model used in middle fusion based on JV's best model parameters and code. 
+- **`run_middle_fusion_rear.sh`**: Shell script for running middle fusion experiments on rear view only.
 - **`run_experiments_late.sh`**: (To be created) Shell script for running late fusion experiments.
 - **`npy_info.py`**: Display all npy shpaes in data folder 
 

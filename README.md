@@ -18,15 +18,42 @@
 ## Folder Structure
 ```
 /data
-├── middle_fusion/  # Contains three subdirectories
-│   ├── rear_view/
-│   ├── side_view/
-│   ├── combined/  # A superposition of rear and side views
+├── combined_ego_rear_npy/  
+│   ├── train_features.npy
+│   ├── train_labels.npy
+│   ├── val_features.npy
+│   ├── val_labels.npy
+│   ├── test_features.npy
+│   ├── test_labels.npy
 │
-├── late_fusion/  # Contains two subdirectories
-│   ├── rear_view/
-│   ├── side_view/
+├── combined_ego_side_npy/  
+│   ├── train_features.npy
+│   ├── train_labels.npy
+│   ├── val_features.npy
+│   ├── val_labels.npy
+│   ├── test_features.npy
+│   ├── test_labels.npy
 │
+├── rear_npy/  
+│   ├── train_features.npy
+│   ├── train_labels.npy
+│   ├── val_features.npy
+│   ├── val_labels.npy
+│   ├── test_features.npy
+│   ├── test_labels.npy
+│
+├── side_npy/  
+│   ├── train_features.npy
+│   ├── train_labels.npy
+│   ├── val_features.npy
+│   ├── val_labels.npy
+│   ├── test_features.npy
+│   ├── test_labels.npy
+│
+├── raw_data/  # Contains two subdirectories
+│   ├── Nov_16_Processed_with_Combined
+│   ├── Nov_17_Processed_with_Combined
+
 /results/  # Directory to log results and model runs
 /archive/  # Archived files for future reference
 ```
@@ -46,6 +73,7 @@
 - **`middle_fusion_JV_best.py`**: JV’s slight improvement on JS’s implementation, but not used for late fusion.
 - **`run_experiments.sh`**: Shell script for running middle fusion experiments.
 - **`run_experiments_late.sh`**: (To be created) Shell script for running late fusion experiments.
+- **`npy_info.py`**: Display all npy shpaes in data folder 
 
 ---
 

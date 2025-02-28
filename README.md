@@ -2,10 +2,19 @@
 
 ## Definitions
 - **Raw Data**: Radar signals captured by our device.
-- **Middle Fusion**: Some features are visible. The raw data is already processed, and from a human perspective, we can already see what it is.
+### middle fusion 
+- we have two views- rear and side.
+- we create two ego based views ego_rear and ego_side which will have added data points from the other view.
+- the only combination is this addition or contatentation of views.
+- We train the model on rear vs ego_rear or side vs ego_side alone, and test on rear vs ego_rear and side vs ego_side respectively.
+
+### late fusion
+- train model1 on rear only
+- train model2 on side only
+- do not use combined view features, we combine the predicted bounding box from model1 and model2
+- tested on side vs rear
 
 ---
-
 ## Folder Structure
 ```
 /data

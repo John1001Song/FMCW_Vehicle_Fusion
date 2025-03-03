@@ -70,6 +70,8 @@
 - **`late_fusion_data_generator_rear_side_matched.py`**: Generates `.npy` files, taking `.csv` files as input.
 - **`late_fusion.py`**: Runs the late fusion experiment.
 - **`middle_fusion_model.py`**: Model used in middle fusion based on JV's best model parameters and code. 
+- **`RaDE-net7_gpu.py`**: Temporary middle fusion model in version 7 with new attention module on feature Intensity. 
+- **`run_middle_fusion_rear7.sh`**: Shell script for running the temporary middle fusion model verison 7 on rear view only.
 - **`run_middle_fusion_rear.sh`**: Shell script for running middle fusion experiments on rear view only.
 - **`run_experiments_late.sh`**: (To be created) Shell script for running late fusion experiments.
 - **`npy_info.py`**: Display all npy shpaes in data folder 

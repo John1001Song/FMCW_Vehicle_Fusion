@@ -67,12 +67,11 @@
 ---
 
 ## Scripts
-- **`late_fusion_data_generator_rear_side_matched.py`**: Generates `.npy` files, taking `.csv` files as input.
-- **`late_fusion.py`**: Runs the late fusion experiment.
-- **`middle_fusion_model.py`**: Model used in middle fusion based on JV's best model parameters and code. 
-- **`RaDE-net7_gpu.py`**: Temporary middle fusion model in version 7 with new attention module on feature Intensity. 
-- **`run_middle_fusion_rear7.sh`**: Shell script for running the temporary middle fusion model verison 7 on rear view only.
-- **`run_middle_fusion_rear.sh`**: Shell script for running middle fusion experiments on rear view only.
+- **`RaDE-net8.py`**: Middle fusion model in version 8 with new sub-network attached with attention module on feature Intensity. 
+- **`run_middle_fusion_rear8.sh`**: Shell script for running the middle fusion model verison 8 on rear view only.
+- **`run_middle_fusion_side8.sh`**: Shell script for running the middle fusion model verison 8 on side view only.
+- **`run_middle_fusion_combined_ego_rear8.sh`**: Shell script for running the middle fusion model verison 8 on rear view enhanced by side view.
+- **`run_middle_fusion_combined_ego_side8.sh`**: Shell script for running the middle fusion model verison 8 on side view enhanced by rear view.
 - **`run_experiments_late.sh`**: (To be created) Shell script for running late fusion experiments.
 - **`npy_info.py`**: Display all npy shpaes in data folder 
 
@@ -85,13 +84,15 @@
 
 ### Planned Experiments
 - **Jinyue AR**:
-  - Slice the **rear** and **side** views for late fusion to have **train, val, test** datasets.
-  - Ensure parameters match those of **middle fusion**.
+  - Add latest dataset generation code for `.npy files`. 
   - Command to run `late_fusion_data_generator_rear_side_matched.py`.
-  - File to generate `.npy` files for middle fusion.
-  - Clean commands for late fusion and add them to `run_experiments_late.sh`.
 
 ### Completed Experiments
+- File to generate `.npy` files for middle fusion.
+- Clean commands for late fusion and add them to `run_experiments_late.sh`.
+- Slice the **rear** and **side** views for late fusion to have **train, val, test** datasets.
+- Ensure parameters match those of **middle fusion**.
+
 - **`model.py` on all three views (rear, side, combined)**
   - **Rear View**: Best performing.
   - **Side View**: Worst performing.

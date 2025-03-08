@@ -110,28 +110,28 @@
 ## Experiments
 
 ### Current Experiments
-- **Ongoing development and model testing.**
+- **Ongoing development and model testing on late fusion.**
 
 ### Planned Experiments
 - **Jinyue AR**:
-  - Add latest dataset generation code for `.npy files`. 
-  - Command to run `late_fusion_data_generator_rear_side_matched.py`.
+  - will provide `late_fusion_dataset_generator.py` soon.
 
 ### Completed Experiments
+- Add latest dataset generation code for `.npy files`. 
 - File to generate `.npy` files for middle fusion.
 - Clean commands for late fusion and add them to `run_experiments_late.sh`.
 - Slice the **rear** and **side** views for late fusion to have **train, val, test** datasets.
 - Ensure parameters match those of **middle fusion**.
 
-- **`model.py` on all three views (rear, side, combined)**
-  - **Rear View**: Best performing.
-  - **Side View**: Worst performing.
-  - **Combined View**: Second best.
-- **`model_with_fusion.py`**
-  - Train `model.py` on **rear** dataset.
-  - Train `model.py` on **side** dataset.
-  - Let both models predict on the test dataset.
-  - Combine their predictions in the **fusion layer** (post-evaluation stage).
+- **`RaDE-net8.py` on all three views (rear, side, 2 combined)**
+  - **Rear View**: good performing.
+  - **Side View**: good performing.
+  - **2 Combined View**: best best.
+- **`run_middle_fusion_*.sh`**
+  - Train `RaDE-net8.py` on **rear** dataset.
+  - Train `RaDE-net8.py` on **side** dataset.
+  - Train `RaDE-net8.py` on **combined_ego_rear** dataset.
+  - Train `RaDE-net8.py` on **combined_ego_side** dataset.
   - **Note**: Combining does not mean pooling but creating a more holistic partial **3D view** from two partial 3D views.
 
 ---
@@ -140,7 +140,7 @@
 ### Late Fusion
 ```
 # To run late_fusion.py
-[Jinyue]
+[Jayneel]
 ```
 
 ---

@@ -18,41 +18,70 @@
 ## Folder Structure
 ```
 /data
-├── combined_ego_rear_npy/  
-│   ├── train_features.npy
-│   ├── train_labels.npy
-│   ├── val_features.npy
-│   ├── val_labels.npy
-│   ├── test_features.npy
-│   ├── test_labels.npy
+├── combined_ego_rear/  
+│   ├── inputs.npy
+│   ├── labels.npy
+│   ├── test_indices.npy
+│   ├── train_indices.npy
+│   ├── val_indicces.npy
 │
-├── combined_ego_side_npy/  
-│   ├── train_features.npy
-│   ├── train_labels.npy
-│   ├── val_features.npy
-│   ├── val_labels.npy
-│   ├── test_features.npy
-│   ├── test_labels.npy
+├── combined_ego_side/  
+│   ├── inputs.npy
+│   ├── labels.npy
+│   ├── test_indices.npy
+│   ├── train_indices.npy
+│   ├── val_indicces.npy
 │
-├── rear_npy/  
-│   ├── train_features.npy
-│   ├── train_labels.npy
-│   ├── val_features.npy
-│   ├── val_labels.npy
-│   ├── test_features.npy
-│   ├── test_labels.npy
+├── rear/  
+│   ├── inputs.npy
+│   ├── labels.npy
+│   ├── test_indices.npy
+│   ├── train_indices.npy
+│   ├── val_indicces.npy
 │
-├── side_npy/  
-│   ├── train_features.npy
-│   ├── train_labels.npy
-│   ├── val_features.npy
-│   ├── val_labels.npy
-│   ├── test_features.npy
-│   ├── test_labels.npy
+├── side/  
+│   ├── inputs.npy
+│   ├── labels.npy
+│   ├── test_indices.npy
+│   ├── train_indices.npy
+│   ├── val_indicces.npy
 │
 ├── raw_data/  # Contains two subdirectories
 │   ├── Nov_16_Processed_with_Combined
 │   ├── Nov_17_Processed_with_Combined
+
+/data_late_fusion
+├── combined_ego_rear/  
+│   ├── gps_offsets.npy
+│   ├── inputs.npy
+│   ├── labels.npy
+│   ├── test_indices.npy
+│   ├── train_indices.npy
+│   ├── val_indicces.npy
+│
+├── combined_ego_side/  
+│   ├── gps_offsets.npy
+│   ├── inputs.npy
+│   ├── labels.npy
+│   ├── test_indices.npy
+│   ├── train_indices.npy
+│   ├── val_indicces.npy
+│
+├── rear/  
+│   ├── gps_offsets.npy
+│   ├── inputs.npy
+│   ├── labels.npy
+│   ├── test_indices.npy
+│   ├── train_indices.npy
+│   ├── val_indicces.npy
+│
+├── side/  
+│   ├── gps_offsets.npy
+│   ├── inputs.npy
+│   ├── labels.npy
+│   ├── test_indices.npy
+│   ├── train_indices.npy
+│   ├── val_indicces.npy
 
 /results/  # Directory to log results and model runs
 /archive/  # Archived files for future reference

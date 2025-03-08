@@ -88,7 +88,6 @@
 ```
 
 ### Notes:
-- The **rear view folder** in both fusions has similar content, but the way **Jinyue** sliced them differs.
 - The following need to be identified:
   - Middle Fusion: **[Need to find]**
   - Late Fusion: **[Need to find]**
@@ -97,11 +96,13 @@
 
 ## Scripts
 - **`RaDE-net8.py`**: Middle fusion model in version 8 with new sub-network attached with attention module on feature Intensity. 
+- **`RaDE-net8_w_late_fusion.py`**: Late fusion framework uses model in version 8 and add decision layer network. 
 - **`run_middle_fusion_rear8.sh`**: Shell script for running the middle fusion model verison 8 on rear view only.
 - **`run_middle_fusion_side8.sh`**: Shell script for running the middle fusion model verison 8 on side view only.
 - **`run_middle_fusion_combined_ego_rear8.sh`**: Shell script for running the middle fusion model verison 8 on rear view enhanced by side view.
 - **`run_middle_fusion_combined_ego_side8.sh`**: Shell script for running the middle fusion model verison 8 on side view enhanced by rear view.
-- **`run_experiments_late.sh`**: (To be created) Shell script for running late fusion experiments.
+- **`run_late_fusion_rear8.sh`**: Shell script for running late fusion experiments where ego view is **rear**.
+- **`run_late_fusion_side8.sh`**: (To be created) Shell script for running late fusion experiments where ego view is **side**.
 - **`npy_info.py`**: Display all npy shpaes in data folder 
 
 ---

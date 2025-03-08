@@ -447,7 +447,7 @@ def main():
 
     # 4) Training
     parser.add_argument("--batch_size", type=int, default=8)
-    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--save_fusion", type=str, default="fusion_mlp.pth")
     parser.add_argument("--log_file", type=str, default="fusion_log.txt")
@@ -529,8 +529,8 @@ def main():
         test_indices_file=args.side_test_indices,
         split="test"
     )
-    rear_test_loader = DataLoader(rear_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
-    side_test_loader = DataLoader(side_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
+    rear_test_loader = DataLoader(rear_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4, drop_last=True)
+    side_test_loader = DataLoader(side_test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4, drop_last=True)
 
     # =========================================
     # B) Load side offsets

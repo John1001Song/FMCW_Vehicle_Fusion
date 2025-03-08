@@ -1,0 +1,15 @@
+(monodtr_py38) jinyues@ad3.ucdavis.edu@egg:~/pointillism/pointillism$ ./run_late_fusion8.sh 
+=== LATE FUSION TRAIN START ===
+Epochs: 10
+Using device: cuda
+Traceback (most recent call last):
+  File "RaDE-net8_w_late_fusion.py", line 616, in <module>
+    main()
+  File "RaDE-net8_w_late_fusion.py", line 566, in main
+    train_late_fusion(
+  File "RaDE-net8_w_late_fusion.py", line 289, in train_late_fusion
+    boxB_rear = transform_box_side_to_rear(boxB_side, offset_side)
+  File "RaDE-net8_w_late_fusion.py", line 130, in transform_box_side_to_rear
+    dx = offsets[:,0]
+IndexError: too many indices for tensor of dimension 1
+(monodtr_py38) jinyues@ad3.ucdavis.edu@egg:~/pointillism/pointillism$ 

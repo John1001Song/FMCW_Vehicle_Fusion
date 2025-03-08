@@ -150,6 +150,19 @@ def transform_box_side_to_rear(box_side, offsets):
 ########################################
 # 4) Combined L1 + IoU late-fusion loss
 ########################################
+def late_fusion_loss_jv(pred_box, gt_box, w_bbox=0.5, w_iou=0.5):
+    """
+    Adjusted loss function:
+    - Uses L2 loss instead of Smooth L1 for more penalty on small deviations.
+    - Increases IoU weight to prioritize better localization.
+    """
+    bbox_loss = F.mse_loss(pred_box, gt_box)  # <-- Use MSE for precise bounding box alignment
+    ious = axis_aligned_iou_3d(pred_box, gt_box)
+    iou_loss_val = 1.0 - ious.mean()
+
+    total = w_bbox * bbox_loss + w_iou * iou_loss_val
+    return total, bbox_loss.item(), iou_loss_val.item()
+    
 def late_fusion_loss(pred_box, gt_box, w_bbox=0.7, w_iou=0.3):
     """
     Example: L = w_bbox * SmoothL1 + w_iou * (1 - IoU)
@@ -364,7 +377,29 @@ def train_late_fusion(
                f"Train Time={train_time:.2f}s, Val Time={val_time:.2f}s, "
                f"Total={total_epoch_time:.2f}s")
         log_print(msg, log_file)
+    
+    # --------------------
+        # (C) Test Evaluation Every 100 Epochs
+        # --------------------
+        # if (epoch + 1) % 100 == 0:
+        #     log_print(f"\n=== Running Test Evaluation at Epoch {epoch + 1} ===", log_file)
+        #     (rear_results, side_results) = test_late_fusion(
+        #         rear_model=rear_model,
+        #         side_model=side_model,
+        #         fusion_mlp=fusion_mlp,
+        #         rear_loader=rear_test_loader,
+        #         side_loader=side_test_loader,
+        #         side_offsets=side_offsets,
+        #         device=device
+        #     )
 
+        #     rear_loss, rear_l1, rear_iou = rear_results
+        #     side_loss, side_l1, side_iou = side_results
+
+        #     log_print(f"\n[Rear Test @ Epoch {epoch + 1}] Loss={rear_loss:.4f}, L1={rear_l1:.4f}, IoU={rear_iou}", log_file)
+        #     log_print(f"\n[Side Test @ Epoch {epoch + 1}] Loss={side_loss:.4f}, L1={side_l1:.4f}, IoU={side_iou}", log_file)
+
+    
     log_print("=== LATE FUSION TRAIN END ===\n", log_file)
 
 ########################################
@@ -377,47 +412,77 @@ def test_late_fusion(
     device
 ):
     """
-    Final test: no backprop, compute bounding-box + IoU loss
+    Final test: no backprop, compute bounding-box + IoU loss separately for rear and side data.
+    Reports IoU at different thresholds.
     """
     fusion_mlp.eval()
     rear_model.eval()
     side_model.eval()
 
-    total_loss = 0.0
-    total_l1   = 0.0
-    total_iou  = 0.0
-    count      = 0
+    # Separate tracking for rear and side data
+    total_loss_rear = 0.0
+    total_loss_side = 0.0
+    total_l1_rear   = 0.0
+    total_l1_side   = 0.0
+    iou_results_rear = {t: 0.0 for t in IOU_THRESHOLDS}
+    iou_results_side = {t: 0.0 for t in IOU_THRESHOLDS}
+    count_rear = 0
+    count_side = 0
 
     with torch.no_grad():
         for batch_rear, batch_side in zip(rear_loader, side_loader):
+            # Rear data
             full_points_rear = batch_rear['full_points'].to(device)
             dynamics_rear    = batch_rear['dynamics'].to(device)
             bbox_gt_rear     = batch_rear['bbox_gt'].to(device)
             idx_side         = batch_side['global_index']
 
+            # Side data
             full_points_side = batch_side['full_points'].to(device)
             dynamics_side    = batch_side['dynamics'].to(device)
 
+            # Offsets
             offset_np = side_offsets[idx_side]
             offset_side = torch.from_numpy(offset_np).float().to(device)
 
+            # Predictions
             boxA, confA = rear_model(full_points_rear, dynamics_rear)
             boxB_side, confB_side = side_model(full_points_side, dynamics_side)
-
             boxB_rear = transform_box_side_to_rear(boxB_side, offset_side)
+
+            # Fusion
             fused_box, fused_conf = fusion_mlp(boxA, confA, boxB_rear, confB_side)
 
-            # Use the same late_fusion_loss for consistency
-            loss_val, l1_val, iou_val = late_fusion_loss(fused_box, bbox_gt_rear)
-            total_loss += loss_val
-            total_l1   += l1_val
-            total_iou  += iou_val
-            count      += 1
+            # Compute losses for rear and side
+            loss_rear, l1_rear, _ = late_fusion_loss(fused_box, bbox_gt_rear)
+            loss_side, l1_side, _ = late_fusion_loss(boxB_rear, bbox_gt_rear)  # Evaluating side separately
 
-    avg_loss = total_loss / count if count>0 else 0
-    avg_l1   = total_l1 / count if count>0 else 0
-    avg_iou  = total_iou / count if count>0 else 0
-    return avg_loss, avg_l1, avg_iou
+            total_loss_rear += loss_rear
+            total_loss_side += loss_side
+            total_l1_rear   += l1_rear
+            total_l1_side   += l1_side
+
+            # Compute IoU at different thresholds
+            iou_vals_rear = compute_iou(fused_box, bbox_gt_rear, thresholds=IOU_THRESHOLDS)
+            iou_vals_side = compute_iou(boxB_rear, bbox_gt_rear, thresholds=IOU_THRESHOLDS)
+
+            for t in IOU_THRESHOLDS:
+                iou_results_rear[t] += iou_vals_rear[t]
+                iou_results_side[t] += iou_vals_side[t]
+
+            count_rear += 1
+            count_side += 1
+
+    # Compute averages
+    avg_loss_rear = total_loss_rear / count_rear if count_rear > 0 else 0
+    avg_loss_side = total_loss_side / count_side if count_side > 0 else 0
+    avg_l1_rear   = total_l1_rear / count_rear if count_rear > 0 else 0
+    avg_l1_side   = total_l1_side / count_side if count_side > 0 else 0
+    avg_iou_rear  = {t: iou_results_rear[t] / count_rear for t in IOU_THRESHOLDS} if count_rear > 0 else {}
+    avg_iou_side  = {t: iou_results_side[t] / count_side for t in IOU_THRESHOLDS} if count_side > 0 else {}
+
+    return (avg_loss_rear, avg_l1_rear, avg_iou_rear), (avg_loss_side, avg_l1_side, avg_iou_side)
+
 
 
 ########################################
@@ -610,7 +675,7 @@ def main():
     fusion_mlp.load_state_dict(best_ckpt["fusion_model_state_dict"])
     fusion_mlp.eval()
 
-    val_loss, val_l1, val_iou = test_late_fusion(
+    (rear_results, side_results)  = test_late_fusion(
         rear_model=rear_model,
         side_model=side_model,
         fusion_mlp=fusion_mlp,
@@ -619,9 +684,17 @@ def main():
         side_offsets=side_offsets,
         device=device
     )
-    log_print(f"\n[Validation after training] Loss={val_loss:.4f}, L1={val_l1:.4f}, IoU={val_iou:.4f}", log_f)
+    
+    # Unpack results
+    rear_loss, rear_l1, rear_iou = rear_results
+    side_loss, side_l1, side_iou = side_results
+    
+    log_print(f"\n[Rear Validation after training] Loss={rear_loss:.4f}, L1={rear_l1:.4f}, IoU={rear_iou}", log_f)
+    log_print(f"\n[Side Validation after training] Loss={side_loss:.4f}, L1={side_l1:.4f}, IoU={side_iou}", log_f)
+    
+    # log_print(f"\n[Validation after training] Loss={val_loss:.4f}, L1={val_l1:.4f}, IoU={val_iou:.4f}", log_f)
 
-    test_loss, test_l1, test_iou = test_late_fusion(
+    (rear_results, side_results)  = test_late_fusion(
         rear_model=rear_model,
         side_model=side_model,
         fusion_mlp=fusion_mlp,
@@ -630,7 +703,13 @@ def main():
         side_offsets=side_offsets,
         device=device
     )
-    log_print(f"[Test] Loss={test_loss:.4f}, L1={test_l1:.4f}, IoU={test_iou:.4f}", log_f)
+    # Unpack results
+    rear_loss, rear_l1, rear_iou = rear_results
+    side_loss, side_l1, side_iou = side_results
+    
+    log_print(f"\n[Rear Test] Loss={rear_loss:.4f}, L1={rear_l1:.4f}, IoU={rear_iou}", log_f)
+    log_print(f"\n[Side Test] Loss={side_loss:.4f}, L1={side_l1:.4f}, IoU={side_iou}", log_f)
+    #log_print(f"[Test] Loss={test_loss:.4f}, L1={test_l1:.4f}, IoU={test_iou:.4f}", log_f)
 
     log_f.close()
 

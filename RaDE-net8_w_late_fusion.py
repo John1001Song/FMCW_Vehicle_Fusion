@@ -108,6 +108,16 @@ class FusionMLP(nn.Module):
         self.conf_out = nn.Linear(hidden_size, 1)  # fused confidence (optional)
 
     def forward(self, boxA, confA, boxB, confB):
+        # print(f"boxA shape: {boxA.shape}")  # Debugging
+        # print(f"confA shape: {confA.shape}")  # Debugging
+        # print(f"boxB shape: {boxB.shape}")  # Debugging
+        # print(f"confB shape: {confB.shape}")  # Debugging
+
+        # Ensure batch sizes match before concatenation
+        assert boxA.shape[0] == confA.shape[0] == boxB.shape[0] == confB.shape[0], "Batch size mismatch!"
+
+
+
         x = torch.cat([boxA, confA, boxB, confB], dim=-1)  # shape: (batch,16)
         h = self.mlp(x)                                   # (batch,hidden_size)
         fused_box = self.box_out(h)                       # (batch,7)
@@ -127,8 +137,8 @@ def transform_box_side_to_rear(box_side, offsets):
     z_s = box_side[:,5]
     th_s= box_side[:,6]
 
-    dx = offsets[:,0]
-    dy = offsets[:,1]
+    dx = offsets[:,0] if offsets.ndim > 1 else offsets[0]
+    dy = offsets[:,1]if offsets.ndim > 1 else offsets[1]
 
     x_r = x_s + dx
     y_r = y_s + dy
@@ -192,7 +202,11 @@ def validate_late_fusion(
 
             # 2) Offsets
             offset_np   = side_offsets[idx_side]
+            # offset_side = torch.from_numpy(offset_np).float().to(device).unsqueeze(0)  # Adds batch dim if needed
+
             offset_side = torch.from_numpy(offset_np).float().to(device)
+            # print("offset_side shape:", offset_side.shape)
+            # print("offset_side values:", offset_side)
 
             # 3) vantage predictions (frozen)
             boxA, confA = rear_model(full_pts_rear, dyn_rear)
@@ -428,8 +442,8 @@ def main():
     parser.add_argument("--side_gps_offsets", type=str, default="data_late_fusion/side/gps_offsets.npy")
 
     # 3) Pre-trained vantage model ckpts
-    parser.add_argument("--rear_ckpt", type=str, default="models/best_rear8_model.pth")
-    parser.add_argument("--side_ckpt", type=str, default="models/best_side8_model.pth")
+    parser.add_argument("--rear_ckpt", type=str, default="models/best_rear_model.pth")
+    parser.add_argument("--side_ckpt", type=str, default="models/best_side_model.pth")
 
     # 4) Training
     parser.add_argument("--batch_size", type=int, default=8)
@@ -469,8 +483,14 @@ def main():
         test_indices_file=args.side_test_indices,
         split="train"
     )
-    rear_train_loader = DataLoader(rear_train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4)
-    side_train_loader = DataLoader(side_train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4)
+    rear_train_loader = DataLoader(rear_train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4, drop_last=True)
+    side_train_loader = DataLoader(side_train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4, drop_last=True)
+
+    for rear_batch, side_batch in zip(rear_train_loader, side_train_loader):
+
+        # Pick the correct key from the batch (e.g., 'full_points' or another main key)
+        key = 'full_points'  # Change this if needed
+        assert rear_batch[key].shape[0] == side_batch[key].shape[0], "Batch size mismatch!"
 
     # Val
     rear_val_dataset = RadarDataset(
@@ -556,8 +576,11 @@ def main():
         min_lr=1e-6,
         verbose=True
     )
+    # print(f"Log file path: {args.log_file}")  # Debugging line
+    # print(f"Directory path: {os.path.dirname(args.log_file)}")  # Debugging line
+    # os.makedirs(os.path.dirname(args.log_file), exist_ok=True)
 
-    os.makedirs(os.path.dirname(args.log_file), exist_ok=True)
+    # os.makedirs(os.path.dirname(args.log_file), exist_ok=True)
     log_f = open(args.log_file, "w")
 
     # =========================================

@@ -9,10 +9,10 @@
 - We train the model on rear vs ego_rear or side vs ego_side alone, and test on rear vs ego_rear and side vs ego_side respectively.
 
 ### late fusion
-- train model1 on rear only
-- train model2 on side only
-- do not use combined view features, we combine the predicted bounding box from model1 and model2
-- tested on side vs rear
+- load pre-trained rear_model and side_model
+- fine-tune the decision layer network
+- do not use combined view features, we combine the predicted bounding box from rear_model and side_model
+- tested on ego:side vs ego:rear
 
 ---
 ## Folder Structure
